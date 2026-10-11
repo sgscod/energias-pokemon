@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Energias Pokémon</title>
+<meta name="pk-online" content="1">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#d32f2f">
+<link rel="icon" href="icon-192.png">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f0ddd0;--panel:#fffaf6;--card:#f8ede4;--ink:#5a4d46;--mute:#8f8179;--line:#dfc9ba;--accent:#d32f2f;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#2a211d;--panel:#352a25;--card:#3d312b;--ink:#f3e7df;--mute:#b5a59b;--line:#55453d}}
+:root[data-theme="dark"]{--bg:#2a211d;--panel:#352a25;--card:#3d312b;--ink:#f3e7df;--mute:#b5a59b;--line:#55453d}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Nunito,"Segoe UI",system-ui,sans-serif;padding-bottom:calc(150px + env(safe-area-inset-bottom,0px))}
+.bar{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 4px}
+h1{margin:0;font-size:26px;font-weight:700}
+#info{color:var(--mute);font-size:14px}
+#mnu{font-size:24px;background:none;border:0;min-height:44px;min-width:44px}
+.menu{margin:0 16px 6px;background:var(--panel);border-radius:14px;padding:10px;box-shadow:0 2px 8px rgba(80,50,30,.2);display:flex;flex-direction:column;gap:6px}
+.menu[hidden]{display:none}
+.chips{display:none;gap:10px;padding:8px 14px;position:sticky;top:env(safe-area-inset-top,0px);background:var(--bg);z-index:5;border-bottom:1px solid var(--line)}
+.chips.show{display:flex}
+.chips button{flex:1;border-radius:12px;border:0;font-weight:700;letter-spacing:.5px;text-transform:uppercase;min-height:46px;background:color-mix(in srgb,var(--pc) 14%,#cfd6e2);color:#6b7585}
+.chips button.v{background:var(--pc);color:#fff}
+#log{font-size:13px;background:color-mix(in srgb,var(--accent) 14%,var(--panel));border-radius:12px;padding:6px 12px;margin:8px 14px 0}
+#log:empty{display:none}
+main{max-width:640px;margin:0 auto;padding-top:6px}
+.card{background:var(--panel);border-radius:18px;box-shadow:0 2px 6px rgba(80,50,30,.16);padding:14px;margin:0 14px 14px}
+.st2{text-align:center;color:var(--mute);font-size:19px;margin:16px 0 8px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center}
+.empty{color:var(--mute);font-size:13px;text-align:center}
+.ei{width:1em;height:1em;vertical-align:-.17em;flex:none}
+button{font:inherit;cursor:pointer;border-radius:12px;border:2px solid var(--line);background:var(--panel);color:var(--ink);padding:8px 12px;min-height:42px}
+button:disabled{opacity:.45;cursor:default}
+button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+input{font:inherit;background:transparent;color:var(--ink);border:0;border-bottom:2px dashed var(--line);padding:2px;min-width:0}
+.ok{background:#2a9d5c;border-color:#2a9d5c;color:#fff;font-weight:800}
+.wide{width:100%;margin-top:8px}
+.danger{border-color:var(--accent);color:var(--accent);font-weight:800}
+.acts{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}.acts button{flex:1}
+.mon{background:color-mix(in srgb,var(--tint) 24%,var(--panel));border-left:8px solid var(--pc)}
+.mn{display:flex;align-items:baseline;gap:8px}
+.nmb{flex:1;text-align:left;border:0;border-bottom:2px dashed var(--line);border-radius:0;background:none;font-size:22px;font-weight:800;padding:2px;min-height:36px;color:var(--ink)}
+#dlg{display:none;position:fixed;inset:0;z-index:35;background:rgba(10,14,28,.6);align-items:flex-end;justify-content:center}
+#dlg.on{display:flex}
+.dbox{width:100%;max-width:480px;background:var(--panel);border-radius:22px 22px 0 0;padding:14px;max-height:92%;overflow:auto;padding-bottom:calc(14px + env(safe-area-inset-bottom,0px))}
+.dbox h3{margin:0 0 4px;text-align:center;font-size:20px}
+.tg{display:flex;justify-content:space-between;align-items:center;gap:8px;width:100%;margin-top:6px;text-align:left}
+.tg span:last-child{font-size:13px;color:var(--mute);display:flex;gap:4px;align-items:center}
+.tg.on{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,var(--panel));font-weight:800}
+.err{color:var(--accent);font-weight:700;text-align:center;margin:8px 0 0}
+.bd{display:inline-block;font-size:12px;font-weight:800;letter-spacing:.6px;border-radius:99px;padding:3px 10px;background:var(--line);color:var(--mute);margin-bottom:6px}
+.bd.a{background:#f5b301;color:#3a2f00}
+.mon.act{outline:3px solid #f5b301;outline-offset:-3px}
+.ph{color:var(--mute);font-weight:400;font-size:17px}
+#srch{display:none;position:fixed;left:0;right:0;top:0;z-index:40;background:var(--panel);box-shadow:0 6px 20px rgba(0,0,0,.35);padding:calc(10px + env(safe-area-inset-top,0px)) 12px 10px}
+#srch.on{display:block}
+.sb{display:flex;gap:8px}
+.sb input{flex:1;font-size:20px;font-weight:700;border:2px solid var(--accent);border-radius:12px;padding:10px 12px;background:var(--bg)}
+.sres{margin-top:8px;max-height:min(46vh,340px);overflow:auto;display:flex;flex-direction:column;gap:6px}
+.sr{display:flex;align-items:center;gap:8px;text-align:left;min-height:46px;width:100%}
+.sr b{flex:1}.sr span{color:var(--mute);font-size:13px}
+.sr em{font-style:normal;font-size:10px;color:#fff;border-radius:8px;padding:2px 6px;font-weight:800}
+.num{color:var(--mute);font-size:20px}
+.tps{display:flex;gap:8px;margin-top:8px}
+.tp{flex:1;text-align:center;border:3px solid color-mix(in srgb,var(--ink) 30%,transparent);border-radius:14px;padding:6px;color:var(--mute);font-weight:700;letter-spacing:.5px;font-size:15px}
+.ep{display:inline-flex;align-items:center;gap:8px;border:0;border-radius:14px;overflow:hidden;background:var(--c);color:var(--tc);font-weight:800;text-transform:uppercase;padding:0 0 0 10px;min-height:42px;font-size:15px}
+.ep .ei{font-size:24px}
+.ep i{font-style:normal;background:rgba(0,0,0,.2);align-self:stretch;display:flex;align-items:center;padding:0 12px}
+.ep:disabled{opacity:1}
+.pal{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:10px}
+.pal button{display:flex;flex-direction:column;align-items:center;padding:6px 2px;border:3px solid var(--c);background:color-mix(in srgb,var(--c) 18%,var(--panel));font-size:11px;font-weight:800;min-height:62px}
+.pal .ei{font-size:28px}
+.pal button.tyon{background:var(--c);color:var(--tc)}
+.dmg{display:flex;align-items:center;gap:6px}
+.dmg button{flex:1;font-weight:800;padding:6px}
+.dv{min-width:70px;text-align:center;font-size:30px;font-weight:800;color:var(--accent)}
+.stb{font-size:13px;padding:5px 10px;min-height:36px;font-weight:700}
+.stb.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.stp{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:14px;justify-content:center}.stp button{min-height:32px;padding:2px 10px}
+.ck{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
+.ck:last-child{border:0}
+.ck>button.bx{width:38px;min-height:38px;padding:0;font-size:22px;font-weight:800;flex:none}
+.ck.on>button.bx{background:#2a9d5c;border-color:#2a9d5c;color:#fff}
+.ck div{flex:1}.ck small{display:block;color:var(--mute)}
+.ck.on b{text-decoration:line-through;opacity:.6}
+.ck .ei{font-size:30px}
+.pick h2{text-align:center;margin:4px 0 8px}
+.logo{font-size:56px;text-align:center;line-height:1.1}
+.rin{width:100%;text-align:center;font-size:30px;font-weight:800;letter-spacing:6px;text-transform:uppercase;border:3px solid var(--accent);border-radius:14px;padding:12px;margin:10px 0 4px;background:var(--bg);color:var(--ink)}
+#nav{position:fixed;left:0;right:0;bottom:0;display:none;background:var(--bg);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px);z-index:9}
+#nav.show{display:flex}
+#nav button{flex:1;border:0;background:none;border-radius:0;min-height:62px;color:var(--mute);font-size:12px;position:relative}
+#nav button b{display:block;font-size:22px}
+#nav button.v{color:var(--accent);font-weight:800}
+#nav .dot{position:absolute;top:8px;right:calc(50% - 22px);width:10px;height:10px;border-radius:50%;background:var(--accent)}
+.fab{position:fixed;right:14px;bottom:calc(76px + env(safe-area-inset-bottom,0px));z-index:10;border:0;border-radius:30px;min-height:56px;padding:0 22px;font-size:17px;font-weight:800;color:#fff;background:var(--accent);box-shadow:0 4px 12px rgba(0,0,0,.3)}
+#fab2{bottom:calc(140px + env(safe-area-inset-bottom,0px));background:#41647f;display:none}
+.ov{position:fixed;inset:0;background:rgba(10,14,28,.75);display:flex;align-items:flex-end;justify-content:center;z-index:20}
+.dlg{width:100%;max-width:460px;background:#171d33;color:#fff;border:4px solid var(--c);border-radius:22px 22px 0 0;padding:14px;box-shadow:0 0 40px color-mix(in srgb,var(--c) 60%,transparent);max-height:92%;overflow:auto;padding-bottom:calc(14px + env(safe-area-inset-bottom,0px))}
+.dh{display:flex;align-items:center;gap:12px;background:var(--c);color:var(--tc);border-radius:14px;padding:10px 14px}
+.dh .big{font-size:58px;line-height:1}
+.dk{font-size:12px;font-weight:700}.dn{font-size:28px;font-weight:800}
+.dq{margin:12px 2px 2px;font-weight:800}
+.dp{display:flex;justify-content:space-between;align-items:center;gap:8px;width:100%;margin-top:8px;min-height:58px;font-size:17px;background:#fff;color:#1d2433;border:3px solid #cfd6e6;text-align:left}
+.dp span{font-size:13px;color:#5b6477;display:flex;gap:6px;align-items:center}
+.dlg .acts button{background:#2a3350;color:#fff;border-color:#3d4a73}
+@media(prefers-reduced-motion:no-preference){.dlg{animation:up .25s ease-out}@keyframes up{from{transform:translateY(60px);opacity:0}}}
+</style>
+</head>
+<body>
+<header class="bar"><div><h1>Energias Pokémon</h1><div id="info"></div></div><button id="mnu" aria-label="Menu">⋮</button></header>
+<div class="menu" id="menu" hidden><button id="newg">🔄 Nova partida</button><button id="who">🚪 Sair da sala</button><button id="inst" hidden>📲 Instalar app</button><div id="sync" class="empty"></div></div>
+<div class="chips" id="tabs"></div>
+<div id="log"></div>
+<main id="m"></main>
+<div id="srch"></div>
+<div id="dlg"></div>
+<div id="modal"></div>
+<button class="fab" id="fab2"></button>
+<button class="fab" id="pass">Passar turno ▶</button>
+<nav id="nav"></nav>
+<script>
+const DEXSTR="1|Bulbasaur|11|3;2|Ivysaur|11|3;3|Venusaur|11|3;4|Charmander|9|;5|Charmeleon|9|;6|Charizard|9|2;7|Squirtle|10|;8|Wartortle|10|;9|Blastoise|10|;10|Caterpie|6|;11|Metapod|6|;12|Butterfree|6|2;13|Weedle|6|3;14|Kakuna|6|3;15|Beedrill|6|3;16|Pidgey|0|2;17|Pidgeotto|0|2;18|Pidgeot|0|2;19|Rattata|0|;19|Alolan Rattata|16|0;20|Raticate|0|;20|Alolan Raticate|16|0;20|Alolan Raticate Totem|16|0;21|Spearow|0|2;22|Fearow|0|2;23|Ekans|3|;24|Arbok|3|;25|Pikachu|12|;25|Alolan Pikachu|12|;26|Raichu|12|;26|Alolan Raichu|12|13;27|Sandshrew|4|;27|Alolan Sandshrew|14|8;28|Sandslash|4|;28|Alolan Sandslash|14|8;29|Nidoran-F|3|;30|Nidorina|3|;31|Nidoqueen|3|4;32|Nidoran-M|3|;33|Nidorino|3|;34|Nidoking|3|4;35|Clefairy|17|;36|Clefable|17|;37|Vulpix|9|;37|Alolan Vulpix|14|;38|Ninetales|9|;38|Alolan Ninetales|14|17;39|Jigglypuff|0|17;40|Wigglytuff|0|17;41|Zubat|3|2;42|Golbat|3|2;43|Oddish|11|3;44|Gloom|11|3;45|Vileplume|11|3;46|Paras|6|11;47|Parasect|6|11;48|Venonat|6|3;49|Venomoth|6|3;50|Diglett|4|;50|Alolan Diglett|4|8;51|Dugtrio|4|;51|Alolan Dugtrio|4|8;52|Meowth|0|;52|Alolan Meowth|16|;52|Galarian Meowth|8|;53|Persian|0|;53|Alolan Persian|16|;54|Psyduck|10|;55|Golduck|10|;56|Mankey|1|;57|Primeape|1|;58|Growlithe|9|;58|Hisuian Growlithe|9|5;59|Arcanine|9|;59|Hisuian Arcanine|9|5;60|Poliwag|10|;61|Poliwhirl|10|;62|Poliwrath|10|1;63|Abra|13|;64|Kadabra|13|;65|Alakazam|13|;66|Machop|1|;67|Machoke|1|;68|Machamp|1|;69|Bellsprout|11|3;70|Weepinbell|11|3;71|Victreebel|11|3;72|Tentacool|10|3;73|Tentacruel|10|3;74|Geodude|5|4;74|Alolan Geodude|5|12;75|Graveler|5|4;75|Alolan Graveler|5|12;76|Golem|5|4;76|Alolan Golem|5|12;77|Ponyta|9|;77|Galarian Ponyta|13|;78|Rapidash|9|;78|Galarian Rapidash|13|17;79|Slowpoke|10|13;79|Galarian Slowpoke|13|;80|Slowbro|10|13;80|Galarian Slowbro|3|13;81|Magnemite|12|8;82|Magneton|12|8;83|Farfetch'd|0|2;83|Galarian Farfetch'd|1|;84|Doduo|0|2;85|Dodrio|0|2;86|Seel|10|;87|Dewgong|10|14;88|Grimer|3|;88|Alolan Grimer|3|16;89|Muk|3|;89|Alolan Muk|3|16;90|Shellder|10|;91|Cloyster|10|14;92|Gastly|7|3;93|Haunter|7|3;94|Gengar|7|3;95|Onix|5|4;96|Drowzee|13|;97|Hypno|13|;98|Krabby|10|;99|Kingler|10|;100|Voltorb|12|;100|Hisuian Voltorb|12|11;101|Electrode|12|;101|Hisuian Electrode|12|11;102|Exeggcute|11|13;103|Exeggutor|11|13;103|Alolan Exeggutor|11|15;104|Cubone|4|;105|Marowak|4|;105|Alolan Marowak|9|7;105|Alolan Marowak Totem|9|7;106|Hitmonlee|1|;107|Hitmonchan|1|;108|Lickitung|0|;109|Koffing|3|;110|Weezing|3|;110|Galarian Weezing|3|17;111|Rhyhorn|4|5;112|Rhydon|4|5;113|Chansey|0|;114|Tangela|11|;115|Kangaskhan|0|;116|Horsea|10|;117|Seadra|10|;118|Goldeen|10|;119|Seaking|10|;120|Staryu|10|;121|Starmie|10|13;122|Mr. Mime|13|17;122|Galarian Mr. Mime|14|13;123|Scyther|6|2;124|Jynx|14|13;125|Electabuzz|12|;126|Magmar|9|;127|Pinsir|6|;128|Tauros|0|;128|Paldean Tauros Combat|1|;128|Paldean Tauros Blaze|1|9;128|Paldean Tauros Aqua|1|10;129|Magikarp|10|;130|Gyarados|10|2;131|Lapras|10|14;132|Ditto|0|;133|Eevee|0|;134|Vaporeon|10|;135|Jolteon|12|;136|Flareon|9|;137|Porygon|0|;138|Omanyte|5|10;139|Omastar|5|10;140|Kabuto|5|10;141|Kabutops|5|10;142|Aerodactyl|5|2;143|Snorlax|0|;144|Articuno|14|2;144|Galarian Articuno|13|2;145|Zapdos|12|2;145|Galarian Zapdos|1|2;146|Moltres|9|2;146|Galarian Moltres|16|2;147|Dratini|15|;148|Dragonair|15|;149|Dragonite|15|2;150|Mewtwo|13|;151|Mew|13|;152|Chikorita|11|;153|Bayleef|11|;154|Meganium|11|;155|Cyndaquil|9|;156|Quilava|9|;157|Typhlosion|9|;157|Hisuian Typhlosion|9|7;158|Totodile|10|;159|Croconaw|10|;160|Feraligatr|10|;161|Sentret|0|;162|Furret|0|;163|Hoothoot|0|2;164|Noctowl|0|2;165|Ledyba|6|2;166|Ledian|6|2;167|Spinarak|6|3;168|Ariados|6|3;169|Crobat|3|2;170|Chinchou|10|12;171|Lanturn|10|12;172|Pichu|12|;173|Cleffa|17|;174|Igglybuff|0|17;175|Togepi|17|;176|Togetic|17|2;177|Natu|13|2;178|Xatu|13|2;179|Mareep|12|;180|Flaaffy|12|;181|Ampharos|12|;182|Bellossom|11|;183|Marill|10|17;184|Azumarill|10|17;185|Sudowoodo|5|;186|Politoed|10|;187|Hoppip|11|2;188|Skiploom|11|2;189|Jumpluff|11|2;190|Aipom|0|;191|Sunkern|11|;192|Sunflora|11|;193|Yanma|6|2;194|Wooper|10|4;194|Paldean Wooper|3|4;195|Quagsire|10|4;196|Espeon|13|;197|Umbreon|16|;198|Murkrow|16|2;199|Slowking|10|13;199|Galarian Slowking|3|13;200|Misdreavus|7|;201|Unown|13|;202|Wobbuffet|13|;203|Girafarig|0|13;204|Pineco|6|;205|Forretress|6|8;206|Dunsparce|0|;207|Gligar|4|2;208|Steelix|8|4;209|Snubbull|17|;210|Granbull|17|;211|Qwilfish|10|3;211|Hisuian Qwilfish|16|3;212|Scizor|6|8;213|Shuckle|6|5;214|Heracross|6|1;215|Sneasel|16|14;215|Hisuian Sneasel|1|3;216|Teddiursa|0|;217|Ursaring|0|;218|Slugma|9|;219|Magcargo|9|5;220|Swinub|14|4;221|Piloswine|14|4;222|Corsola|10|5;222|Galarian Corsola|7|;223|Remoraid|10|;224|Octillery|10|;225|Delibird|14|2;226|Mantine|10|2;227|Skarmory|8|2;228|Houndour|16|9;229|Houndoom|16|9;230|Kingdra|10|15;231|Phanpy|4|;232|Donphan|4|;233|Porygon2|0|;234|Stantler|0|;235|Smeargle|0|;236|Tyrogue|1|;237|Hitmontop|1|;238|Smoochum|14|13;239|Elekid|12|;240|Magby|9|;241|Miltank|0|;242|Blissey|0|;243|Raikou|12|;244|Entei|9|;245|Suicune|10|;246|Larvitar|5|4;247|Pupitar|5|4;248|Tyranitar|5|16;249|Lugia|13|2;250|Ho-Oh|9|2;251|Celebi|13|11;252|Treecko|11|;253|Grovyle|11|;254|Sceptile|11|;255|Torchic|9|;256|Combusken|9|1;257|Blaziken|9|1;258|Mudkip|10|;259|Marshtomp|10|4;260|Swampert|10|4;261|Poochyena|16|;262|Mightyena|16|;263|Zigzagoon|0|;263|Galarian Zigzagoon|16|0;264|Linoone|0|;264|Galarian Linoone|16|0;265|Wurmple|6|;266|Silcoon|6|;267|Beautifly|6|2;268|Cascoon|6|;269|Dustox|6|3;270|Lotad|10|11;271|Lombre|10|11;272|Ludicolo|10|11;273|Seedot|11|;274|Nuzleaf|11|16;275|Shiftry|11|16;276|Taillow|0|2;277|Swellow|0|2;278|Wingull|10|2;279|Pelipper|10|2;280|Ralts|13|17;281|Kirlia|13|17;282|Gardevoir|13|17;283|Surskit|6|10;284|Masquerain|6|2;285|Shroomish|11|;286|Breloom|11|1;287|Slakoth|0|;288|Vigoroth|0|;289|Slaking|0|;290|Nincada|6|4;291|Ninjask|6|2;292|Shedinja|6|7;293|Whismur|0|;294|Loudred|0|;295|Exploud|0|;296|Makuhita|1|;297|Hariyama|1|;298|Azurill|0|17;299|Nosepass|5|;300|Skitty|0|;301|Delcatty|0|;302|Sableye|16|7;303|Mawile|8|17;304|Aron|8|5;305|Lairon|8|5;306|Aggron|8|5;307|Meditite|1|13;308|Medicham|1|13;309|Electrike|12|;310|Manectric|12|;311|Plusle|12|;312|Minun|12|;313|Volbeat|6|;314|Illumise|6|;315|Roselia|11|3;316|Gulpin|3|;317|Swalot|3|;318|Carvanha|10|16;319|Sharpedo|10|16;320|Wailmer|10|;321|Wailord|10|;322|Numel|9|4;323|Camerupt|9|4;324|Torkoal|9|;325|Spoink|13|;326|Grumpig|13|;327|Spinda|0|;328|Trapinch|4|;329|Vibrava|4|15;330|Flygon|4|15;331|Cacnea|11|;332|Cacturne|11|16;333|Swablu|0|2;334|Altaria|15|2;335|Zangoose|0|;336|Seviper|3|;337|Lunatone|5|13;338|Solrock|5|13;339|Barboach|10|4;340|Whiscash|10|4;341|Corphish|10|;342|Crawdaunt|10|16;343|Baltoy|4|13;344|Claydol|4|13;345|Lileep|5|11;346|Cradily|5|11;347|Anorith|5|6;348|Armaldo|5|6;349|Feebas|10|;350|Milotic|10|;351|Castform|0|;352|Kecleon|0|;353|Shuppet|7|;354|Banette|7|;355|Duskull|7|;356|Dusclops|7|;357|Tropius|11|2;358|Chimecho|13|;359|Absol|16|;360|Wynaut|13|;361|Snorunt|14|;362|Glalie|14|;363|Spheal|14|10;364|Sealeo|14|10;365|Walrein|14|10;366|Clamperl|10|;367|Huntail|10|;368|Gorebyss|10|;369|Relicanth|10|5;370|Luvdisc|10|;371|Bagon|15|;372|Shelgon|15|;373|Salamence|15|2;374|Beldum|8|13;375|Metang|8|13;376|Metagross|8|13;377|Regirock|5|;378|Regice|14|;379|Registeel|8|;380|Latias|15|13;381|Latios|15|13;382|Kyogre|10|;383|Groudon|4|;384|Rayquaza|15|2;385|Jirachi|8|13;386|Deoxys|13|;387|Turtwig|11|;388|Grotle|11|;389|Torterra|11|4;390|Chimchar|9|;391|Monferno|9|1;392|Infernape|9|1;393|Piplup|10|;394|Prinplup|10|;395|Empoleon|10|8;396|Starly|0|2;397|Staravia|0|2;398|Staraptor|0|2;399|Bidoof|0|;400|Bibarel|0|10;401|Kricketot|6|;402|Kricketune|6|;403|Shinx|12|;404|Luxio|12|;405|Luxray|12|;406|Budew|11|3;407|Roserade|11|3;408|Cranidos|5|;409|Rampardos|5|;410|Shieldon|5|8;411|Bastiodon|5|8;412|Burmy|6|;413|Wormadam|6|11;414|Mothim|6|2;415|Combee|6|2;416|Vespiquen|6|2;417|Pachirisu|12|;418|Buizel|10|;419|Floatzel|10|;420|Cherubi|11|;421|Cherrim|11|;422|Shellos|10|;423|Gastrodon|10|4;424|Ambipom|0|;425|Drifloon|7|2;426|Drifblim|7|2;427|Buneary|0|;428|Lopunny|0|;429|Mismagius|7|;430|Honchkrow|16|2;431|Glameow|0|;432|Purugly|0|;433|Chingling|13|;434|Stunky|3|16;435|Skuntank|3|16;436|Bronzor|8|13;437|Bronzong|8|13;438|Bonsly|5|;439|Mime Jr.|13|17;440|Happiny|0|;441|Chatot|0|2;442|Spiritomb|7|16;443|Gible|15|4;444|Gabite|15|4;445|Garchomp|15|4;446|Munchlax|0|;447|Riolu|1|;448|Lucario|1|8;449|Hippopotas|4|;450|Hippowdon|4|;451|Skorupi|3|6;452|Drapion|3|16;453|Croagunk|3|1;454|Toxicroak|3|1;455|Carnivine|11|;456|Finneon|10|;457|Lumineon|10|;458|Mantyke|10|2;459|Snover|11|14;460|Abomasnow|11|14;461|Weavile|16|14;462|Magnezone|12|8;463|Lickilicky|0|;464|Rhyperior|4|5;465|Tangrowth|11|;466|Electivire|12|;467|Magmortar|9|;468|Togekiss|17|2;469|Yanmega|6|2;470|Leafeon|11|;471|Glaceon|14|;472|Gliscor|4|2;473|Mamoswine|14|4;474|Porygon-Z|0|;475|Gallade|13|1;476|Probopass|5|8;477|Dusknoir|7|;478|Froslass|14|7;479|Rotom|12|7;480|Uxie|13|;481|Mesprit|13|;482|Azelf|13|;483|Dialga|8|15;484|Palkia|10|15;485|Heatran|9|8;486|Regigigas|0|;487|Giratina|7|15;488|Cresselia|13|;489|Phione|10|;490|Manaphy|10|;491|Darkrai|16|;492|Shaymin|11|;493|Arceus|0|;494|Victini|13|9;495|Snivy|11|;496|Servine|11|;497|Serperior|11|;498|Tepig|9|;499|Pignite|9|1;500|Emboar|9|1;501|Oshawott|10|;502|Dewott|10|;503|Samurott|10|;503|Hisuian Samurott|10|16;504|Patrat|0|;505|Watchog|0|;506|Lillipup|0|;507|Herdier|0|;508|Stoutland|0|;509|Purrloin|16|;510|Liepard|16|;511|Pansage|11|;512|Simisage|11|;513|Pansear|9|;514|Simisear|9|;515|Panpour|10|;516|Simipour|10|;517|Munna|13|;518|Musharna|13|;519|Pidove|0|2;520|Tranquill|0|2;521|Unfezant|0|2;522|Blitzle|12|;523|Zebstrika|12|;524|Roggenrola|5|;525|Boldore|5|;526|Gigalith|5|;527|Woobat|13|2;528|Swoobat|13|2;529|Drilbur|4|;530|Excadrill|4|8;531|Audino|0|;532|Timburr|1|;533|Gurdurr|1|;534|Conkeldurr|1|;535|Tympole|10|;536|Palpitoad|10|4;537|Seismitoad|10|4;538|Throh|1|;539|Sawk|1|;540|Sewaddle|6|11;541|Swadloon|6|11;542|Leavanny|6|11;543|Venipede|6|3;544|Whirlipede|6|3;545|Scolipede|6|3;546|Cottonee|11|17;547|Whimsicott|11|17;548|Petilil|11|;549|Lilligant|11|;549|Hisuian Lilligant|11|1;550|Basculin|10|;551|Sandile|4|16;552|Krokorok|4|16;553|Krookodile|4|16;554|Darumaka|9|;554|Galarian Darumaka|14|;555|Darmanitan|9|;555|Galarian Darmanitan|14|;555|Galarian Darmanitan Zen|14|9;556|Maractus|11|;557|Dwebble|6|5;558|Crustle|6|5;559|Scraggy|16|1;560|Scrafty|16|1;561|Sigilyph|13|2;562|Yamask|7|;562|Galarian Yamask|4|7;563|Cofagrigus|7|;564|Tirtouga|10|5;565|Carracosta|10|5;566|Archen|5|2;567|Archeops|5|2;568|Trubbish|3|;569|Garbodor|3|;570|Zorua|16|;570|Hisuian Zorua|0|7;571|Zoroark|16|;571|Hisuian Zoroark|0|7;572|Minccino|0|;573|Cinccino|0|;574|Gothita|13|;575|Gothorita|13|;576|Gothitelle|13|;577|Solosis|13|;578|Duosion|13|;579|Reuniclus|13|;580|Ducklett|10|2;581|Swanna|10|2;582|Vanillite|14|;583|Vanillish|14|;584|Vanilluxe|14|;585|Deerling|0|11;586|Sawsbuck|0|11;587|Emolga|12|2;588|Karrablast|6|;589|Escavalier|6|8;590|Foongus|11|3;591|Amoonguss|11|3;592|Frillish|10|7;593|Jellicent|10|7;594|Alomomola|10|;595|Joltik|6|12;596|Galvantula|6|12;597|Ferroseed|11|8;598|Ferrothorn|11|8;599|Klink|8|;600|Klang|8|;601|Klinklang|8|;602|Tynamo|12|;603|Eelektrik|12|;604|Eelektross|12|;605|Elgyem|13|;606|Beheeyem|13|;607|Litwick|7|9;608|Lampent|7|9;609|Chandelure|7|9;610|Axew|15|;611|Fraxure|15|;612|Haxorus|15|;613|Cubchoo|14|;614|Beartic|14|;615|Cryogonal|14|;616|Shelmet|6|;617|Accelgor|6|;618|Stunfisk|4|12;618|Galarian Stunfisk|4|8;619|Mienfoo|1|;620|Mienshao|1|;621|Druddigon|15|;622|Golett|4|7;623|Golurk|4|7;624|Pawniard|16|8;625|Bisharp|16|8;626|Bouffalant|0|;627|Rufflet|0|2;628|Braviary|0|2;628|Hisuian Braviary|13|2;629|Vullaby|16|2;630|Mandibuzz|16|2;631|Heatmor|9|;632|Durant|6|8;633|Deino|16|15;634|Zweilous|16|15;635|Hydreigon|16|15;636|Larvesta|6|9;637|Volcarona|6|9;638|Cobalion|8|1;639|Terrakion|5|1;640|Virizion|11|1;641|Tornadus|2|;642|Thundurus|12|2;643|Reshiram|15|9;644|Zekrom|15|12;645|Landorus|4|2;646|Kyurem|15|14;647|Keldeo|10|1;648|Meloetta|0|13;649|Genesect|6|8;650|Chespin|11|;651|Quilladin|11|;652|Chesnaught|11|1;653|Fennekin|9|;654|Braixen|9|;655|Delphox|9|13;656|Froakie|10|;657|Frogadier|10|;658|Greninja|10|16;659|Bunnelby|0|;660|Diggersby|0|4;661|Fletchling|0|2;662|Fletchinder|9|2;663|Talonflame|9|2;664|Scatterbug|6|;665|Spewpa|6|;666|Vivillon|6|2;667|Litleo|9|0;668|Pyroar|9|0;669|Flabébé|17|;670|Floette|17|;671|Florges|17|;672|Skiddo|11|;673|Gogoat|11|;674|Pancham|1|;675|Pangoro|1|16;676|Furfrou|0|;677|Espurr|13|;678|Meowstic|13|;679|Honedge|8|7;680|Doublade|8|7;681|Aegislash|8|7;682|Spritzee|17|;683|Aromatisse|17|;684|Swirlix|17|;685|Slurpuff|17|;686|Inkay|16|13;687|Malamar|16|13;688|Binacle|5|10;689|Barbaracle|5|10;690|Skrelp|3|10;691|Dragalge|3|15;692|Clauncher|10|;693|Clawitzer|10|;694|Helioptile|12|0;695|Heliolisk|12|0;696|Tyrunt|5|15;697|Tyrantrum|5|15;698|Amaura|5|14;699|Aurorus|5|14;700|Sylveon|17|;701|Hawlucha|1|2;702|Dedenne|12|17;703|Carbink|5|17;704|Goomy|15|;705|Sliggoo|15|;705|Hisuian Sliggoo|8|15;706|Goodra|15|;706|Hisuian Goodra|8|15;707|Klefki|8|17;708|Phantump|7|11;709|Trevenant|7|11;710|Pumpkaboo|7|11;711|Gourgeist|7|11;712|Bergmite|14|;713|Avalugg|14|;713|Hisuian Avalugg|14|5;714|Noibat|2|15;715|Noivern|2|15;716|Xerneas|17|;717|Yveltal|16|2;718|Zygarde|15|4;719|Diancie|5|17;720|Hoopa|13|7;721|Volcanion|9|10;722|Rowlet|11|2;723|Dartrix|11|2;724|Decidueye|11|7;724|Hisuian Decidueye|11|1;725|Litten|9|;726|Torracat|9|;727|Incineroar|9|16;728|Popplio|10|;729|Brionne|10|;730|Primarina|10|17;731|Pikipek|0|2;732|Trumbeak|0|2;733|Toucannon|0|2;734|Yungoos|0|;735|Gumshoos|0|;736|Grubbin|6|;737|Charjabug|6|12;738|Vikavolt|6|12;739|Crabrawler|1|;740|Crabominable|1|14;741|Oricorio|9|2;742|Cutiefly|6|17;743|Ribombee|6|17;744|Rockruff|5|;745|Lycanroc|5|;746|Wishiwashi|10|;747|Mareanie|3|10;748|Toxapex|3|10;749|Mudbray|4|;750|Mudsdale|4|;751|Dewpider|10|6;752|Araquanid|10|6;753|Fomantis|11|;754|Lurantis|11|;755|Morelull|11|17;756|Shiinotic|11|17;757|Salandit|3|9;758|Salazzle|3|9;759|Stufful|0|1;760|Bewear|0|1;761|Bounsweet|11|;762|Steenee|11|;763|Tsareena|11|;764|Comfey|17|;765|Oranguru|0|13;766|Passimian|1|;767|Wimpod|6|10;768|Golisopod|6|10;769|Sandygast|7|4;770|Palossand|7|4;771|Pyukumuku|10|;772|Type: Null|0|;773|Silvally|0|;774|Minior|5|2;775|Komala|0|;776|Turtonator|9|15;777|Togedemaru|12|8;778|Mimikyu|7|17;779|Bruxish|10|13;780|Drampa|0|15;781|Dhelmise|7|11;782|Jangmo-o|15|;783|Hakamo-o|15|1;784|Kommo-o|15|1;785|Tapu Koko|12|17;786|Tapu Lele|13|17;787|Tapu Bulu|11|17;788|Tapu Fini|10|17;789|Cosmog|13|;790|Cosmoem|13|;791|Solgaleo|13|8;792|Lunala|13|7;793|Nihilego|5|3;794|Buzzwole|6|1;795|Pheromosa|6|1;796|Xurkitree|12|;797|Celesteela|8|2;798|Kartana|11|8;799|Guzzlord|16|15;800|Necrozma|13|;801|Magearna|8|17;802|Marshadow|1|7;803|Poipole|3|;804|Naganadel|3|15;805|Stakataka|5|8;806|Blacephalon|9|7;807|Zeraora|12|;808|Meltan|8|;809|Melmetal|8|;810|Grookey|11|;811|Thwackey|11|;812|Rillaboom|11|;813|Scorbunny|9|;814|Raboot|9|;815|Cinderace|9|;816|Sobble|10|;817|Drizzile|10|;818|Inteleon|10|;819|Skwovet|0|;820|Greedent|0|;821|Rookidee|2|;822|Corvisquire|2|;823|Corviknight|2|8;824|Blipbug|6|;825|Dottler|6|13;826|Orbeetle|6|13;827|Nickit|16|;828|Thievul|16|;829|Gossifleur|11|;830|Eldegoss|11|;831|Wooloo|0|;832|Dubwool|0|;833|Chewtle|10|;834|Drednaw|10|5;835|Yamper|12|;836|Boltund|12|;837|Rolycoly|5|;838|Carkol|5|9;839|Coalossal|5|9;840|Applin|11|15;841|Flapple|11|15;842|Appletun|11|15;843|Silicobra|4|;844|Sandaconda|4|;845|Cramorant|2|10;846|Arrokuda|10|;847|Barraskewda|10|;848|Toxel|12|3;849|Toxtricity|12|3;850|Sizzlipede|9|6;851|Centiskorch|9|6;852|Clobbopus|1|;853|Grapploct|1|;854|Sinistea|7|;855|Polteageist|7|;856|Hatenna|13|;857|Hattrem|13|;858|Hatterene|13|17;859|Impidimp|16|17;860|Morgrem|16|17;861|Grimmsnarl|16|17;862|Obstagoon|16|0;863|Perrserker|8|;864|Cursola|7|;865|Sirfetch'd|1|;866|Mr. Rime|14|13;867|Runerigus|4|7;868|Milcery|17|;869|Alcremie|17|;870|Falinks|1|;871|Pincurchin|12|;872|Snom|14|6;873|Frosmoth|14|6;874|Stonjourner|5|;875|Eiscue|14|;876|Indeedee|13|0;877|Morpeko|12|16;878|Cufant|8|;879|Copperajah|8|;880|Dracozolt|12|15;881|Arctozolt|12|14;882|Dracovish|10|15;883|Arctovish|10|14;884|Duraludon|8|15;885|Dreepy|15|7;886|Drakloak|15|7;887|Dragapult|15|7;888|Zacian|17|;889|Zamazenta|1|;890|Eternatus|3|15;891|Kubfu|1|;892|Urshifu|1|16;893|Zarude|16|11;894|Regieleki|12|;895|Regidrago|15|;896|Glastrier|14|;897|Spectrier|7|;898|Calyrex|13|11;899|Wyrdeer|0|13;900|Kleavor|6|5;901|Ursaluna|4|0;902|Basculegion|10|7;903|Sneasler|1|3;904|Overqwil|16|3;905|Enamorus|17|2;906|Sprigatito|11|;907|Floragato|11|;908|Meowscarada|11|16;909|Fuecoco|9|;910|Crocalor|9|;911|Skeledirge|9|7;912|Quaxly|10|;913|Quaxwell|10|;914|Quaquaval|10|1;915|Lechonk|0|;916|Oinkologne|0|;917|Tarountula|6|;918|Spidops|6|;919|Nymble|6|;920|Lokix|6|16;921|Pawmi|12|;922|Pawmo|12|1;923|Pawmot|12|1;924|Tandemaus|0|;925|Maushold|0|;926|Fidough|17|;927|Dachsbun|17|;928|Smoliv|11|0;929|Dolliv|11|0;930|Arboliva|11|0;931|Squawkabilly|0|2;932|Nacli|5|;933|Naclstack|5|;934|Garganacl|5|;935|Charcadet|9|;936|Armarouge|9|13;937|Ceruledge|9|7;938|Tadbulb|12|;939|Bellibolt|12|;940|Wattrel|12|2;941|Kilowattrel|12|2;942|Maschiff|16|;943|Mabosstiff|16|;944|Shroodle|3|0;945|Grafaiai|3|0;946|Bramblin|11|7;947|Brambleghast|11|7;948|Toedscool|4|11;949|Toedscruel|4|11;950|Klawf|5|;951|Capsakid|11|;952|Scovillain|11|9;953|Rellor|6|;954|Rabsca|6|13;955|Flittle|13|;956|Espathra|13|;957|Tinkatink|17|8;958|Tinkatuff|17|8;959|Tinkaton|17|8;960|Wiglett|10|;961|Wugtrio|10|;962|Bombirdier|2|16;963|Finizen|10|;964|Palafin|10|;965|Varoom|8|3;966|Revavroom|8|3;967|Cyclizar|15|0;968|Orthworm|8|;969|Glimmet|5|3;970|Glimmora|5|3;971|Greavard|7|;972|Houndstone|7|;973|Flamigo|2|1;974|Cetoddle|14|;975|Cetitan|14|;976|Veluza|10|13;977|Dondozo|10|;978|Tatsugiri|15|10;979|Annihilape|1|7;980|Clodsire|3|4;981|Farigiraf|0|13;982|Dudunsparce|0|;983|Kingambit|16|8;984|Great Tusk|4|1;985|Scream Tail|17|13;986|Brute Bonnet|11|16;987|Flutter Mane|7|17;988|Slither Wing|6|1;989|Sandy Shocks|12|4;990|Iron Treads|4|8;991|Iron Bundle|14|10;992|Iron Hands|1|12;993|Iron Jugulis|16|2;994|Iron Moth|9|3;995|Iron Thorns|5|12;996|Frigibax|15|14;997|Arctibax|15|14;998|Baxcalibur|15|14;999|Gimmighoul|7|;1000|Gholdengo|8|7;1001|Wo-Chien|16|11;1002|Chien-Pao|16|14;1003|Ting-Lu|16|4;1004|Chi-Yu|16|9;1005|Roaring Moon|15|16;1006|Iron Valiant|17|1;1007|Koraidon|1|15;1008|Miraidon|12|15;1009|Walking Wake|10|15;1010|Iron Leaves|11|13;1011|Dipplin|11|15;1012|Poltchageist|11|7;1013|Sinistcha|11|7;1014|Okidogi|3|1;1015|Munkidori|3|13;1016|Fezandipiti|3|17;1017|Ogerpon|11|;1018|Archaludon|8|15;1019|Hydrapple|11|15;1020|Gouging Fire|9|15;1021|Raging Bolt|12|15;1022|Iron Boulder|5|13;1023|Iron Crown|8|13;1024|Terapagos|0|;1025|Pecharunt|3|7";
+const w=["#fff","#fff","#fff","#2b2200","#fff","#fff","#fff","#fff"];
+const G=[(c,w)=>`<path d="M8 24C8 13 14 8 24 8c0 10-5 16-14 16z" fill="${w}"/><path d="M9 23L19 13" stroke="${c}" stroke-width="1.8"/>`,
+(c,w)=>`<path d="M16 5c1 5 7 8 7 14a7 7 0 0 1-14 0c0-3 2-5 3-7 0 2 1 3 2 3 0-4 0-6 2-10z" fill="${w}"/>`,
+(c,w)=>`<path d="M16 5C20 11 24 15 24 20a8 8 0 0 1-16 0c0-5 4-9 8-15z" fill="${w}"/>`,
+(c,w)=>`<path d="M18 4L9 18h6l-2 10 10-15h-6z" fill="${w}"/>`,
+(c,w)=>`<ellipse cx="16" cy="16" rx="10" ry="6.5" fill="${w}"/><circle cx="16" cy="16" r="3.6" fill="${c}"/>`,
+(c,w)=>`<rect x="9" y="12" width="14" height="11" rx="3" fill="${w}"/><path d="M12 12V8m4 4V7m4 5V8" stroke="${w}" stroke-width="3" stroke-linecap="round"/>`,
+(c,w)=>`<circle cx="14" cy="17" r="9" fill="${w}"/><circle cx="19" cy="13" r="8" fill="${c}"/>`,
+(c,w)=>`<circle cx="16" cy="16" r="6.5" fill="${w}"/><circle cx="16" cy="16" r="10" fill="none" stroke="${w}" stroke-width="4" stroke-dasharray="3.1 3.1"/><circle cx="16" cy="16" r="2.8" fill="${c}"/>`];
+const T=[["Grama","#43a047"],["Fogo","#e8650f"],["Água","#1e8fe6"],["Elétrico","#ffd000"],["Psíquico","#a64fc2"],["Luta","#b5651d"],["Escuridão","#37474f"],["Metal","#8c98a8"]].map((t,i)=>[t[0],`<svg class="ei" viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="15" fill="${t[1]}" stroke="rgba(0,0,0,.28)"/>${G[i](t[1],w[i])}</svg>`,t[1],i===3?"#3a2f00":"#fff"]);
+const TY=[["NORMAL","#bfb86f"],["FIGHTING","#d32f2f"],["FLYING","#9a85e0"],["POISON","#a63fb8"],["GROUND","#dcb04b"],["ROCK","#b8a22e"],["BUG","#98b82a"],["GHOST","#7556a6"],["STEEL","#b2b2cc"],["FIRE","#e8650f"],["WATER","#1e8fe6"],["GRASS","#4caf50"],["ELECTRIC","#ffd000"],["PSYCHIC","#ec407a"],["ICE","#84dfe9"],["DRAGON","#6236b8"],["DARK","#5d4037"],["FAIRY","#f48fb8"]];
+const ST=[["poison","☠️","Veneno",10],["burn","🔥","Queimadura",20],["sleep","💤","Dormindo",0],["para","⛔","Paralisado",0],["conf","💫","Confuso",0]];
+const PC=["#2f7fd1","#d6336c"];
+const ONLINE=!!document.querySelector('meta[name="pk-online"]');
+const DEX=new Map();
+DEXSTR.split(";").forEach(r=>{const[a,b,c,d]=r.split("|");DEX.set(b.toLowerCase(),{n:b,num:+a,ty:d===""?[+c]:[+c,+d]})});
+const rnd=()=>Math.floor(Math.random()*T.length);
+const draw=i=>{const ty=S.p[i].types||[];return ty.length?+ty[Math.floor(Math.random()*ty.length)]:rnd()};
+const esc=s=>String(s).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;");
+const ts=t=>`--c:${T[t][2]};--tc:${T[t][3]}`;
+const mon=()=>({n:"",ty:[],num:0,rc:1,pool:{},dmg:0,poison:0,burn:0,sleep:0,para:0,conf:0});
+const acx=p=>p.ko?-1:(p.ac||0);
+const nm=(m,k)=>esc(m.n||"Pokémon "+(k+1));
+const fresh=()=>({turn:1,act:0,started:false,log:"",p:[0,1].map(i=>({name:ONLINE?"Jogador "+(i+1):(i?"Irmão":"Eu"),pend:[],trash:{},types:[],ck:[0,0,0,0],ac:0,atk:null,mons:[mon()]}))});
+let S,L={view:0,tab:"mon",me:ONLINE?null:"both",pal:[-1,-1],hide:false,room:""},ws=null,deferred=false,ip=null;
+try{S=JSON.parse(localStorage.getItem("pkEnergy2"))}catch(e){}
+if(!S||!S.p)S=fresh();
+if(S.started===undefined)S.started=true;
+if(ONLINE)try{const x=localStorage.getItem("pkMe");L.room=localStorage.getItem("pkRoom")||"";L.me=x==="both"?"both":(L.room&&(x==="0"||x==="1"))?+x:null}catch(e){}
+L.view=typeof L.me==="number"?L.me:S.act;
+const $=id=>document.getElementById(id);
+const setSync=t=>{$("sync").textContent=t};
+function save(){try{localStorage.setItem("pkEnergy2",JSON.stringify(S))}catch(e){}}
+const metaOf=()=>({turn:S.turn,act:S.act,started:S.started,log:S.log||""});
+function push(...ws_){save();if(!ws||ws.readyState!==1)return;ws_.forEach(x=>{const k=x==="m"?"meta":"p"+x;ws.send(JSON.stringify({t:"s",k,v:JSON.stringify(x==="m"?metaOf():S.p[x])}))})}
+function apply(k,v){try{const o=JSON.parse(v);if(k==="meta")Object.assign(S,o);else S.p[+k[1]]=o}catch(e){return}if(L.me==="both")L.view=S.act;remote()}
+function remote(){const a=document.activeElement;if(a&&a.tagName==="INPUT"){deferred=true;return}render()}
+function leave(msg){if(ws){ws.onclose=null;try{ws.close()}catch(e){}ws=null}L.room="";L.me=null;L.on=null;L.err=msg||"";try{localStorage.removeItem("pkRoom");localStorage.removeItem("pkMe")}catch(e){}setSync("");render()}
+function connect(){
+  if(!ONLINE||L.me==="both"||!L.room)return;
+  try{ws&&(ws.onclose=null,ws.close());ws=new WebSocket((location.protocol==="https:"?"wss://":"ws://")+location.host+"/ws")}catch(e){return}
+  const me=ws,room=L.room;
+  ws.onopen=()=>ws.send(JSON.stringify({t:"j",r:room,s:typeof L.me==="number"?L.me:undefined}));
+  ws.onmessage=e=>{let m;try{m=JSON.parse(e.data)}catch(x){return}
+    if(m.t==="hi"){L.me=m.slot;L.view=m.slot;try{localStorage.setItem("pkMe",String(m.slot))}catch(x){}setSync("🟢 Sala "+room);render()}
+    else if(m.t==="all"){const first=!m.d.meta;try{if(localStorage.getItem("pkSR")!==room){if(first)S=fresh();localStorage.setItem("pkSR",room)}}catch(x){}
+      if(first)push("m",0,1);else["meta","p0","p1"].forEach(k=>m.d[k]&&apply(k,m.d[k]));render()}
+    else if(m.t==="s")apply(m.k,m.v);
+    else if(m.t==="pr"){L.on=m.on;info()}
+    else if(m.t==="full")leave("Sala cheia: já há 2 jogadores conectados.");
+    else if(m.t==="kick")leave("Outro aparelho assumiu o seu lugar nesta sala.")};
+  ws.onclose=()=>{if(ws!==me)return;setSync("🔴 Reconectando…");setTimeout(connect,2000)};
+}
+setInterval(()=>{if(ws&&ws.readyState===1)ws.send('{"t":"p"}')},25000);
+const add=(o,t,n=1)=>{o[t]=(o[t]||0)+n};
+const ep=(o,act,i,k)=>{const ks=Object.keys(o).filter(t=>o[t]>0);if(!ks.length)return'<span class="empty">nenhuma</span>';
+  return ks.map(t=>`<button class="ep" style="${ts(t)}" ${act?`data-a="drop" data-i="${i}" data-k="${k}" data-t="${t}" aria-label="Tirar 1 ${T[t][0]}"`:"disabled"}>${T[t][1]}<span>${T[t][0]}</span><i>× ${o[t]}</i></button>`).join("")};
+const sum=m=>{const k=Object.keys(m.pool).filter(t=>m.pool[t]>0);return(k.length?k.map(t=>T[t][1]+"×"+m.pool[t]).join(" "):"sem energia")+(m.dmg?" · dano "+m.dmg:"")};
+const tps=ty=>ty.length?ty.map(x=>`<span class="tp">${TY[x][0]}</span>`).join(""):'<span class="tp">TIPO (digite o nome acima)</span>';
+const norm=s=>s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+let SQ=null;
+function srchRes(q){
+  q=q.trim();const n=norm(q);if(!n)return'<p class="empty">Digite o início do nome</p>';
+  const a=[],b=[];
+  for(const x of DEX.values()){const nn=norm(x.n);if(nn.startsWith(n))a.push(x);else if(nn.split(/[\s-]/).some(w=>w.startsWith(n)))b.push(x)}
+  return a.concat(b).slice(0,25).map(x=>`<button class="sr" data-s="${esc(x.n)}"><b>${esc(x.n)}</b><span>#${String(x.num).padStart(3,"0")}</span>${x.ty.map(t=>`<em style="background:${TY[t][1]}">${TY[t][0]}</em>`).join("")}</button>`).join("")+`<button class="sr" data-s="${esc(q)}">Usar "${esc(q)}" mesmo assim</button>`;
+}
+function openSrch(i,k){
+  SQ={i,k};
+  $("srch").innerHTML='<div class="sb"><input id="sq" placeholder="Digite o nome do Pokémon" autocomplete="off" autocapitalize="words" aria-label="Buscar Pokémon"><button id="sx" aria-label="Fechar">✕</button></div><div id="sres" class="sres"></div>';
+  $("srch").className="on";$("sres").innerHTML=srchRes("");
+  const q=$("sq");q.focus();
+  q.oninput=()=>{$("sres").innerHTML=srchRes(q.value)};
+  $("sx").onclick=closeSrch;
+  $("sres").onclick=e=>{const x=e.target.closest("[data-s]");if(x)pickMon(x.dataset.s)};
+}
+function closeSrch(){SQ=null;$("srch").className="";$("srch").innerHTML=""}
+function pickMon(name){const i=SQ.i,mo=S.p[i].mons[SQ.k],d=look(name);mo.n=name;mo.ty=d?d.ty:[];mo.num=d?d.num:0;closeSrch();push(i);render()}
+const look=v=>{const w=v.trim().toLowerCase().split(/\s+/);while(w.length){const x=DEX.get(w.join(" "));if(x)return x;w.pop()}return null};
+function autoSel(D,a){const c=a.rc??1,ks=Object.keys(a.pool).filter(t=>a.pool[t]>0),tot=ks.reduce((n,t)=>n+a.pool[t],0);D.sel={};if(c>0&&tot>=c){if(tot===c)ks.forEach(t=>D.sel[t]=a.pool[t]);else if(ks.length===1)D.sel[ks[0]]=c}}
+function dlgClose(){L.dlg=null;$("dlg").className="";$("dlg").innerHTML=""}
+function dlgOpen(D){L.dlg=D;dlgDraw()}
+function dlgDraw(){
+  const D=L.dlg;if(!D)return;const p=S.p[D.i];let h;
+  if(D.t==="atk"){
+    const o=S.p[1-D.i],oa=acx(o),isA=D.tg===oa;
+    h=`<div class="dbox"><h3>⚔️ Ataque de ${esc(p.name)}</h3><div class="st2">Dano</div>
+<div class="dmg"><button data-d="dm" data-v="-50">−50</button><button data-d="dm" data-v="-10">−10</button><output class="dv">${D.dmg}</output><button data-d="dm" data-v="10">+10</button><button data-d="dm" data-v="50">+50</button></div>
+<div class="st2">Alvo · ${esc(o.name)}</div>${[...o.mons.keys()].sort((a,b)=>(b===oa)-(a===oa)).map(k=>{const m=o.mons[k];return`<button class="tg ${D.tg===k?"on":""}" data-d="tg" data-k="${k}"><span>${k===oa?"⭐ Ativo":"Banco"} · ${nm(m,k)}</span><span>dano ${m.dmg}</span></button>`}).join("")}
+${isA?`<div class="st2">Status aplicado</div><div class="row">${ST.map(([s,e,n])=>`<button class="stb ${D.st[s]?"on":""}" data-d="st" data-t="${s}">${e} ${n}</button>`).join("")}</div>${ST.filter(y=>D.st[y[0]]&&y[3]).map(([s,e,n])=>`<div class="stp">${e} ${n}:<button data-d="sv" data-t="${s}" data-v="-10">−10</button><b>${D.st[s]}</b><button data-d="sv" data-t="${s}" data-v="10">+10</button>por turno</div>`).join("")}`:'<p class="empty">Status só vale para o Pokémon ativo.</p>'}
+<div class="acts"><button data-d="x">Cancelar</button><button class="ok" data-d="okA">Confirmar ataque</button></div></div>`;
+  }else{
+    const ac=p.ac||0,a=p.mons[ac],c=a.rc??1,ks=Object.keys(a.pool).filter(t=>a.pool[t]>0),tot=ks.reduce((n,t)=>n+a.pool[t],0),sl=Object.values(D.sel).reduce((n,x)=>n+x,0);
+    const msg=tot<c?`<p class="err">Não dá para recuar: ${nm(a,ac)} tem ${tot} energia(s) e o recuo custa ${c} (faltam ${c-tot}).</p>`:c===0?'<p class="empty">Recuo grátis: nenhuma energia é descartada.</p>':sl<c?`<p class="err">Escolha ${c-sl} energia(s) para descartar no lixo.</p>`:`<p class="empty">Vai descartar ${c} energia(s) no lixo.</p>`;
+    h=`<div class="dbox"><h3>↩️ Recuar ${nm(a,ac)}</h3>${p.ret===S.turn?'<p class="err">Atenção: já recuou neste turno.</p>':""}
+<div class="st2">Custo de recuo</div><div class="dmg"><button data-d="rc" data-v="-1">−1</button><output class="dv">${c}</output><button data-d="rc" data-v="1">+1</button></div>
+${c>0&&tot>=c?`<div class="st2">Energias do Pokémon (toque para descartar)</div><div class="row">${ks.map(t=>{const r=a.pool[t]-(D.sel[t]||0);return r>0?`<button class="ep" style="${ts(t)}" data-d="ad" data-t="${t}">${T[t][1]}<span>${T[t][0]}</span><i>× ${r}</i></button>`:""}).join("")}</div><div class="st2">A descartar (${sl}/${c})</div><div class="row">${Object.keys(D.sel).filter(t=>D.sel[t]>0).map(t=>`<button class="ep" style="${ts(t)}" data-d="rm" data-t="${t}">${T[t][1]}<span>${T[t][0]}</span><i>× ${D.sel[t]}</i></button>`).join("")||'<span class="empty">nenhuma</span>'}</div>`:""}
+${msg}<div class="st2">Quem entra no lugar</div>${p.mons.map((m,k)=>k===ac?"":`<button class="tg ${D.to===k?"on":""}" data-d="to" data-k="${k}"><span>Banco · ${nm(m,k)}</span><span>${sum(m)}</span></button>`).join("")}
+<div class="acts"><button data-d="x">Cancelar</button><button class="ok" data-d="okR" ${tot>=c&&sl===c&&D.to!=null?"":"disabled"}>Confirmar recuo</button></div></div>`;
+  }
+  $("dlg").innerHTML=h;$("dlg").className="on";
+}
+function info(){const r=ONLINE&&L.room&&typeof L.me==="number"?" · sala "+L.room+(L.on?(L.on[0]&&L.on[1]?" · 2/2 conectados":" · aguardando o outro jogador"):""):"";$("info").textContent=(S.started?"Turno "+S.turn+" · vez de "+S.p[S.act].name:"Escolha quem começa")+r}
+function render(){
+  info();$("modal").innerHTML="";
+  $("log").textContent=S.log?"Ao passar o turno: "+S.log:"";
+  const v=L.view,pb=$("pass"),f2=$("fab2"),ready=S.started&&L.me!==null;
+  const mine=L.me==="both"||S.act===L.me;
+  pb.style.display=ready?"":"none";pb.disabled=!mine;
+  pb.textContent=mine?"Passar turno ▶":"Aguardando "+S.p[S.act].name+"…";
+  $("tabs").className="chips"+(ready?" show":"");
+  $("nav").className=ready?"show":"";
+  f2.style.display="none";
+  $("tabs").innerHTML=S.p.map((p,i)=>`<button data-a="view" data-i="${i}" class="${v===i?"v":""}" style="--pc:${PC[i]}">${S.act===i?"▶ ":""}${esc(p.name)}${L.me===i?" (você)":""}</button>`).join("");
+  const m=$("m");
+  if(L.me===null){
+    m.innerHTML=L.room?`<section class="card pick"><div class="logo">⚡</div><h2>Conectando à sala ${esc(L.room)}…</h2><p class="empty">O servidor grátis pode levar até 1 minuto para acordar na primeira vez.</p><button class="wide" data-a="leave">Cancelar</button></section>`
+    :`<section class="card pick"><div class="logo">⚡</div><h2>Energias Pokémon</h2><p class="empty">Digite o código da sala. Os dois jogadores usam o mesmo código.</p><input id="room" class="rin" placeholder="CÓDIGO DA SALA" maxlength="12" autocapitalize="characters" autocomplete="off" aria-label="Código da sala">${L.err?`<p class="err">${esc(L.err)}</p>`:""}<button class="ok wide" data-a="join">Entrar na sala</button><button class="wide" data-a="me" data-i="both">Jogar os dois neste aparelho</button>${ip?'<button class="wide" data-a="inst">📲 Instalar app neste celular</button>':""}<p class="empty">Para instalar: menu ⋮ do navegador → Instalar app. No iPhone: Compartilhar → Adicionar à Tela de Início.</p></section>`;
+    return}
+  if(!S.started){
+    const cfg=S.p.map((p,i)=>{const ty=p.types||[];return`<section class="card" style="--pc:${PC[i]}"><input value="${esc(p.name)}" data-a="nm" data-i="${i}" aria-label="Nome do jogador" style="font-size:20px;font-weight:800;color:${PC[i]}"><div class="st2" style="margin:10px 0 0">Energias de ${esc(p.name)} (até 3)</div><div class="pal">${T.map((t,x)=>`<button data-a="ty" data-i="${i}" data-t="${x}" class="${ty.includes(x)?"tyon":""}" style="${ts(x)}">${t[1]}${t[0]}</button>`).join("")}</div><div class="acts"><button data-a="tyr" data-i="${i}" class="${ty.length?"":"ok"}">🎲 Aleatória (todos os tipos)</button></div><p class="empty">${ty.length?"Sorteia só entre: "+ty.map(x=>T[x][0]).join(", ")+" ("+ty.length+"/3)":"Sorteia entre os 8 tipos"}</p></section>`}).join("");
+    m.innerHTML=cfg+`<section class="card pick"><h2>Quem começa?</h2><div class="acts"><button class="ok" data-a="start" data-i="0">${esc(S.p[0].name)}</button><button class="ok" data-a="start" data-i="1">${esc(S.p[1].name)}</button><button data-a="start" data-i="r">🎲 Sortear</button></div></section>`;save();return}
+  const p=S.p[v],i=v,ck=p.ck||[0,0,0,0],act=S.act===i,pe=p.pend.length;
+  const pi=S.p[S.act].pend.length?S.act:(S.p[1-S.act].pend.length?1-S.act:-1);
+  const pk=pi>=0?(S.p[pi].ck||[0,0,0,0]):[0,0];
+  $("nav").innerHTML=[["mon","🃏","Pokémon"],["turn","✅","Turno"],["trash","🗑️","Lixo"]].map(([k,e,n])=>`<button data-a="tab" data-t="${k}" class="${L.tab===k?"v":""}"><b>${e}</b>${n}${k==="turn"&&pe?'<span class="dot"></span>':""}</button>`).join("");
+  let h="";
+  if(L.tab==="mon"){
+    const ac=acx(p);
+    h=(p.ko?'<div class="card"><p class="err" style="margin:0">⚠️ O Pokémon ativo foi derrotado. Escolha quem sobe como ativo, sem custo de recuo.</p></div>':"")+[...p.mons.keys()].sort((a,b)=>(b===ac)-(a===ac)).map(k=>{
+      const mo=p.mons[k],isA=k===ac;
+      const tot=Object.values(mo.pool).reduce((a,b)=>a+b,0),ty=mo.ty||[];
+      const pal=L.pal[i]===k?`<div class="pal">${T.map((t,x)=>`<button data-a="pick" data-i="${i}" data-k="${k}" data-t="${x}" style="${ts(x)}">${t[1]}${t[0]}</button>`).join("")}</div>`:"";
+      const sts=ST.map(([sk,e,n])=>`<button class="stb ${mo[sk]?"on":""}" data-a="st" data-i="${i}" data-k="${k}" data-t="${sk}">${e} ${n}</button>`).join("");
+      const stp=ST.filter(x=>mo[x[0]]&&x[3]).map(([sk,e,n])=>`<div class="stp">${e} ${n}:<button data-a="stv" data-i="${i}" data-k="${k}" data-t="${sk}" data-v="-10">−10</button><b>${mo[sk]}</b><button data-a="stv" data-i="${i}" data-k="${k}" data-t="${sk}" data-v="10">+10</button>por turno</div>`).join("");
+      const d=(x)=>`<button data-a="dmg" data-i="${i}" data-k="${k}" data-v="${x}">${x>0?"+":"−"}${Math.abs(x)}</button>`;
+      return`<div class="card mon ${isA?"act":""}" style="--tint:${ty.length?TY[ty[0]][1]:"#cdbfb4"};--pc:${PC[i]}">
+<span class="bd ${isA?"a":""}">${isA?"⭐ ATIVO":"BANCO"}</span><div class="mn"><button class="nmb" data-a="srch" data-i="${i}" data-k="${k}" aria-label="Buscar Pokémon">${mo.n?esc(mo.n):'<span class="ph">Toque para buscar o Pokémon</span>'}</button><span class="num">${mo.num?"#"+String(mo.num).padStart(3,"0"):""}</span></div>
+<div class="tps">${tps(ty)}</div>
+<div class="st2">Energias vinculadas (${tot})</div><div class="row">${ep(mo.pool,1,i,k)}</div>
+${tot?'<p class="empty">Toque numa energia para tirar 1 (vai ao lixo)</p>':""}
+<div class="acts"><button data-a="pal" data-i="${i}" data-k="${k}">${L.pal[i]===k?"✕ Fechar":"＋ Escolher energia"}</button></div>${pal}
+<div class="st2">Dano</div><div class="dmg">${d(-50)}${d(-10)}<output class="dv" aria-live="polite">${mo.dmg}</output>${d(10)}${d(50)}</div>
+${isA?`<div class="st2">Status</div><div class="row">${sts}</div>${stp}`:""}
+<div class="acts">${isA?`<button data-a="stclr" data-i="${i}" data-k="${k}">✨ Curar status</button><button data-a="ret" data-i="${i}" ${p.mons.length<2?"disabled":""}>↩️ Recuar</button>`:`<button data-a="mkact" data-i="${i}" data-k="${k}">${p.ko?"⭐ Subir como ativo (sem custo)":"⭐ Tornar ativo (paga o recuo)"}</button>`}<button class="danger" data-a="ko" data-i="${i}" data-k="${k}">💥 Derrotado</button></div></div>`}).join("")+`<div class="card"><button class="wide" style="margin:0" data-a="addm" data-i="${i}" ${p.mons.length>=4?"disabled":""}>＋ Adicionar Pokémon (${p.mons.length}/4)</button></div>`;
+  }else if(L.tab==="turn"){
+    const t0=p.pend[0],ready2=ck[0]&&ck[1],op=S.p[1-i],ak=p.atk;
+    const atkS=ak?`${ak.dmg} de dano em ${op.mons[ak.tg]?nm(op.mons[ak.tg],ak.tg):"?"} (${ak.tg===acx(op)?"ativo":"banco"}) ${Object.keys(ak.st||{}).map(x=>ST.find(y=>y[0]===x)[1]).join("")} · aplica ao passar o turno`:"Informe dano, alvo e status. O outro jogador vê ao passar o turno.";
+    const row=(n,b,s,x)=>`<div class="ck ${n===2?(pe?"":"on"):(ck[n]?"on":"")}"><button class="bx" ${n===2?"disabled":`data-a="ck" data-i="${i}" data-k="${n}"`} aria-label="${b}">${n===2?(pe?"":"✓"):(ck[n]?"✓":"")}</button><div><b>${b}</b><small>${s}</small></div>${x||""}</div>`;
+    h=`<div class="st2">Checklist do turno</div><div class="card">${act?"":`<p class="empty">Não é a vez de ${esc(p.name)}.</p>`}
+${row(0,"1. Comprar uma carta","Sempre antes de qualquer outra coisa")}
+${row(1,"2. Baixar Pokémon","Veja se desceu algum. Se sim, adicione na aba Pokémon.",`<button data-a="addm" data-i="${i}">＋</button>`)}
+${row(2,"3. Vincular energia",pe?(ready2?"Energia pronta · vai ao lixo se passar o turno sem vincular":"Faça os passos 1 e 2 primeiro · senão vai ao lixo ao passar o turno"):"Energia vinculada",pe?`<button class="ok" ${ready2?'data-a="show"':"disabled"}>${t0!==undefined?T[t0][1]:""} Abrir</button>`:"")}
+${row(3,"4. Atacar",atkS,`<button ${act&&!p.ko?'data-a="atk"':"disabled"} data-i="${i}">⚔️ ${ak?"Editar":"Atacar"}</button>${ak?`<button data-a="atkx" data-i="${i}">✕</button>`:""}`)}</div>
+<div class="st2">Energias da partida</div><div class="card"><div class="row">${(p.types||[]).length?p.types.map(x=>`<span class="ep" style="${ts(x)}">${T[x][1]}<span>${T[x][0]}</span><i>&nbsp;</i></span>`).join(""):"🎲 aleatória (todos os tipos)"}</div></div>`;
+  }else{
+    h=`<div class="st2">Lixo de ${esc(p.name)}</div><div class="card"><div class="row">${ep(p.trash,0)}</div><div class="acts"><button data-a="clr" data-i="${i}">Esvaziar lixo</button></div></div>`;
+  }
+  m.innerHTML=`<section style="--pc:${PC[i]}">${h}</section>`;
+  if(pi>=0&&pk[0]&&pk[1]){const q=S.p[pi],t=q.pend[0];
+    if(L.hide){f2.style.display="block";f2.innerHTML=`${T[t][1]} Vincular energia`}
+    else $("modal").innerHTML=`<div class="ov"><div class="dlg" style="${ts(t)}" role="dialog" aria-modal="true" aria-label="Vincular energia"><div class="dh"><span class="big">${T[t][1]}</span><div><div class="dk">ENERGIA PARA VINCULAR · ${esc(q.name)}</div><div class="dn">${T[t][0]}</div></div></div><div class="dq">Qual Pokémon recebe?</div>${[...q.mons.keys()].sort((a,b)=>(b===acx(q))-(a===acx(q))).map(k=>{const mo=q.mons[k];return`<button class="dp" data-a="att" data-i="${pi}" data-j="0" data-k="${k}"><b>${k===acx(q)?"⭐ ":""}${nm(mo,k)}</b><span>${sum(mo)}</span></button>`}).join("")}<div class="acts"><button data-a="dis" data-i="${pi}" data-j="0">🗑 Lixo</button><button data-a="hide">Depois</button></div></div></div>`}
+  save();
+}
+document.addEventListener("click",e=>{
+  const b=e.target.closest("button[data-a]");if(!b)return;
+  const{a,i,j,k,t,v}=b.dataset;
+  if(a==="me"){L.me="both";L.room="";L.err="";try{localStorage.setItem("pkMe","both");localStorage.removeItem("pkRoom")}catch(x){}L.view=S.act;render();return}
+  if(a==="join"){const r=($("room")?$("room").value:"").trim().toUpperCase().replace(/[^A-Z0-9]/g,"");
+    if(r.length<3){L.err="Digite ao menos 3 letras ou números.";render();return}
+    L.err="";L.room=r;L.me=null;try{localStorage.setItem("pkRoom",r);localStorage.removeItem("pkMe")}catch(x){}render();connect();return}
+  if(a==="leave"){leave("");return}
+  if(a==="inst"){if(ip){ip.prompt();ip=null;render()}return}
+  if(a==="start"){S.act=i==="r"?Math.floor(Math.random()*2):+i;S.started=true;S.log="";L.hide=false;S.p.forEach(p=>p.ck=[0,0,0,0]);S.p[S.act].pend.push(draw(S.act));if(L.me==="both")L.view=S.act;L.tab="turn";render();push("m",0,1);return}
+  if(a==="view"){L.view=+i;render();return}
+  if(a==="tab"){L.tab=t;render();return}
+  if(a==="hide"){L.hide=true;render();return}
+  if(a==="show"){L.hide=false;render();return}
+  if(a==="ty"){const q=S.p[i];q.types=q.types||[];const x=+t,ix=q.types.indexOf(x);if(ix>=0)q.types.splice(ix,1);else if(q.types.length<3)q.types.push(x);render();save();return}
+  if(a==="tyr"){S.p[i].types=[];render();save();return}
+  if(a==="srch"){openSrch(+i,+k);return}
+  const p=S.p[i],m=p.mons[k];
+  if(a==="mkact"&&p.ko){p.ko=0;p.ac=+k;render();push(+i);return}
+  if(a==="ret"||a==="mkact"){const ac=p.ac||0,D={t:"ret",i:+i,to:a==="mkact"?+k:null,sel:{}},bn=p.mons.map((_,x)=>x).filter(x=>x!==ac);if(D.to===null&&bn.length===1)D.to=bn[0];autoSel(D,p.mons[ac]);dlgOpen(D);return}
+  if(a==="atk"){const o=S.p[1-i],ak=p.atk;dlgOpen({t:"atk",i:+i,dmg:ak?ak.dmg:0,tg:ak&&o.mons[ak.tg]?ak.tg:Math.max(0,acx(o)),st:Object.assign({poison:0,burn:0,sleep:0,para:0,conf:0},ak?ak.st:{})});return}
+  if(a==="att"){add(m.pool,p.pend.splice(j,1)[0]);L.hide=false}
+  else if(a==="dis"){add(p.trash,p.pend.splice(j,1)[0]);L.hide=false}
+  else if(a==="ck"){p.ck=p.ck||[0,0,0,0];p.ck[k]=p.ck[k]?0:1}
+  else if(a==="drop"){m.pool[t]--;add(p.trash,t)}
+  else if(a==="pick"){add(m.pool,t);L.pal[i]=-1}
+  else if(a==="pal"){L.pal[i]=L.pal[i]===+k?-1:+k}
+  else if(a==="dmg"){m.dmg=Math.max(0,m.dmg+Number(v))}
+  else if(a==="st"){m[t]=m[t]?0:(ST.find(x=>x[0]===t)[3]||1)}
+  else if(a==="stv"){m[t]=Math.max(10,m[t]+Number(v))}
+  else if(a==="stclr"){ST.forEach(x=>m[x[0]]=0)}
+  else if(a==="addm"){if(p.mons.length<4){p.mons.push(mon());L.tab="mon"}}
+  else if(a==="ko"){
+    for(const x in m.pool)add(p.trash,x,m.pool[x]);
+    L.pal[i]=-1;
+    {const a0=p.ac||0,wasA=!p.ko&&+k===a0;if(p.mons.length>1){p.mons.splice(k,1);p.ac=+k<a0?a0-1:(+k===a0?0:a0);if(wasA)p.ko=1;if(p.mons.length===1){p.ko=0;p.ac=0}}else{p.mons[0]=mon();p.ko=0}}
+  }
+  else if(a==="atkx"){p.atk=null;p.ck=p.ck||[0,0,0,0];p.ck[3]=0}
+  else if(a==="clr"){p.trash={}}
+  render();push(+i);
+});
+$("m").addEventListener("change",e=>{
+  const{a,i,k}=e.target.dataset;
+  if(a==="nm"){S.p[i].name=e.target.value;info();push(+i)}
+  else if(a==="mn"){const mo=S.p[i].mons[k],d=look(e.target.value);mo.n=e.target.value.trim();mo.ty=d?d.ty:[];mo.num=d?d.num:0;push(+i);const c=e.target.closest(".mon");c.style.setProperty("--tint",mo.ty.length?TY[mo.ty[0]][1]:"#cdbfb4");c.querySelector(".num").textContent=mo.num?"#"+String(mo.num).padStart(3,"0"):"";c.querySelector(".tps").innerHTML=tps(mo.ty)}
+});
+document.addEventListener("focusout",()=>{if(deferred){deferred=false;setTimeout(render,0)}});
+$("pass").onclick=()=>{
+  if(!(L.me==="both"||S.act===L.me))return;
+  const parts=[],pa=S.p[S.act],op=S.p[1-S.act],A=pa.atk;
+  S.p.forEach(p=>{p.pend.forEach(t=>{add(p.trash,t);parts.push(p.name+": energia "+T[t][0]+" foi para o lixo")});p.pend=[]});
+  if(A){const oa=acx(op),ti=op.mons[A.tg]?A.tg:Math.max(0,oa),tm=op.mons[ti],ss=[];tm.dmg=(tm.dmg||0)+(A.dmg||0);
+    if(ti===oa)for(const x in A.st){tm[x]=A.st[x];ss.push(ST.find(y=>y[0]===x)[1])}
+    parts.push(pa.name+" atacou "+(tm.n||"Pokémon "+(ti+1))+" ("+op.name+"): +"+A.dmg+(ss.length?" "+ss.join(""):""));pa.atk=null}
+  S.p.forEach(p=>p.mons.forEach((m,k)=>{const d=(m.poison||0)+(m.burn||0);if(d){m.dmg=(m.dmg||0)+d;parts.push(p.name+" · "+(m.n||"Pokémon "+(k+1))+" +"+d)}}));
+  S.log=parts.join("; ");
+  S.p.forEach(p=>p.ck=[0,0,0,0]);
+  S.act=1-S.act;S.turn++;L.hide=false;S.p[S.act].pend.push(draw(S.act));
+  if(L.me==="both")L.view=S.act;
+  L.tab="turn";render();push("m",0,1);
+};
+$("dlg").addEventListener("click",e=>{
+  const b=e.target.closest("[data-d]");if(!b||!L.dlg)return;
+  const D=L.dlg,x=b.dataset.d,{t,v,k}=b.dataset,p=S.p[D.i];
+  if(x==="x"){dlgClose();return}
+  if(D.t==="atk"){
+    if(x==="dm")D.dmg=Math.max(0,D.dmg+Number(v));
+    else if(x==="tg")D.tg=+k;
+    else if(x==="st")D.st[t]=D.st[t]?0:(ST.find(y=>y[0]===t)[3]||1);
+    else if(x==="sv")D.st[t]=Math.max(10,D.st[t]+Number(v));
+    else if(x==="okA"){const st={};if(D.tg===acx(S.p[1-D.i]))for(const s in D.st)if(D.st[s])st[s]=D.st[s];
+      p.atk={dmg:D.dmg,tg:D.tg,st};p.ck=p.ck||[0,0,0,0];p.ck[3]=1;dlgClose();render();push(D.i);return}
+  }else{
+    const a=p.mons[p.ac||0],c=a.rc??1;
+    if(x==="rc"){a.rc=Math.min(5,Math.max(0,c+Number(v)));autoSel(D,a)}
+    else if(x==="to")D.to=+k;
+    else if(x==="ad"){if(Object.values(D.sel).reduce((n,y)=>n+y,0)<c&&(a.pool[t]||0)-(D.sel[t]||0)>0)add(D.sel,t)}
+    else if(x==="rm"){if(D.sel[t])D.sel[t]--}
+    else if(x==="okR"){const sl=Object.values(D.sel).reduce((n,y)=>n+y,0),tot=Object.values(a.pool).reduce((n,y)=>n+y,0);
+      if(tot<c||sl!==c||D.to==null)return;
+      for(const q in D.sel)if(D.sel[q]>0){a.pool[q]-=D.sel[q];add(p.trash,q,D.sel[q])}
+      ST.forEach(y=>a[y[0]]=0);p.ac=D.to;p.ret=S.turn;dlgClose();render();push(D.i);return}
+  }
+  dlgDraw();
+});
+$("fab2").onclick=()=>{L.hide=false;render()};
+$("mnu").onclick=()=>{$("menu").hidden=!$("menu").hidden};
+$("who").style.display=ONLINE?"":"none";
+$("who").onclick=()=>{$("menu").hidden=true;leave("")};
+document.addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target.id==="room"){const b=document.querySelector("[data-a=join]");b&&b.click()}});
+let armT;const ng=$("newg");
+ng.onclick=()=>{
+  if(!ng.classList.contains("arm")){ng.classList.add("arm");ng.textContent="Toque de novo para confirmar";armT=setTimeout(()=>{ng.classList.remove("arm");ng.textContent="🔄 Nova partida"},4000);return}
+  clearTimeout(armT);ng.classList.remove("arm");ng.textContent="🔄 Nova partida";
+  const names=S.p.map(p=>p.name),tys=S.p.map(p=>p.types||[]);
+  S=fresh();S.p.forEach((p,i)=>{p.name=names[i];p.types=tys[i]});L.pal=[-1,-1];L.hide=false;L.tab="mon";$("menu").hidden=true;render();push("m",0,1);
+};
+window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();ip=e;$("inst").hidden=false;if(ONLINE&&L.me===null&&!L.room)render()});
+$("inst").onclick=()=>{if(ip){ip.prompt();ip=null;$("inst").hidden=true}};
+if(ONLINE&&"serviceWorker"in navigator)navigator.serviceWorker.register("/sw.js").catch(()=>{});
+render();
+if(ONLINE)connect();
+</script>
+</body>
+</html>
